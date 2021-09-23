@@ -64,11 +64,8 @@ public class DatabaseHandler {
             connection = DriverManager.getConnection(url,user,password);
             Outputer.println("Соединение с базой данных установлено.");
             App.logger.info("Соединение с базой данных установлено.");
-        } catch (SQLException throwables) {
+        } catch (SQLException e) {
             Outputer.printerror("Произошла ошибка при подключении к базе данных!");
-            throwables.getSQLState();
-            throwables.getStackTrace();
-            throwables.printStackTrace();
             App.logger.error("Произошла ошибка при подключении к базе данных!");
         } catch (ClassNotFoundException e) {
             Outputer.printerror("Драйвер управления базой данных не найден!");

@@ -56,18 +56,17 @@ public class Server {
     public void run() {
         try {
             do {
+                App.logger.info("Запуск сервера...");
                 startServer();
-                System.out.println("start");
+                App.logger.info("Сервер успешно запущен.");
                 try{
                     request = null;
                     if (!forkJoinPool.submit(() -> {
-                        System.out.println("Lets fuck");
                         request = receive();
                         App.logger.info("Получено команда '" + request.getCommandName() + "'");
                         return true;
                     }).get()) break;
                     forkJoinPool.execute( new ServerConnectionHandler(this,datagramChannel, request,commandManager,target)); ;
-                    System.out.println("What the Fuck");
                     forkJoinPool.awaitTermination(500,TimeUnit.MILLISECONDS);
                     stopServer();
                 }  catch (ExecutionException | InterruptedException e) {
@@ -78,7 +77,6 @@ public class Server {
         } catch (IOException e) {
             Outputer.println("Произошла ошибка при попытке завершить соединение с клиентом!");
             App.logger.error("Произошла ошибка при попытке завершить соединение с клиентом!");
-            e.printStackTrace();
         }
     }
 
@@ -112,15 +110,18 @@ public class Server {
 
 
 
-    private void startServer() throws IOException {
-        App.logger.info("Запуск сервера...");
-        datagramChannel = DatagramChannel.open();
-        address = new InetSocketAddress(InetAddress.getLocalHost(), port);
-        datagramChannel.bind(address);
-        datagramChannel.configureBlocking(false);
-        selector = Selector.open();
-        datagramChannel.register(selector, SelectionKey.OP_READ);
-        App.logger.info("Сервер успешно запущен.");
+    private void startServer() {
+        try {
+            datagramChannel = DatagramChannel.open();
+            address = new InetSocketAddress(InetAddress.getLocalHost(), port);
+            datagramChannel.bind(address);
+            datagramChannel.configureBlocking(false);
+            selector = Selector.open();
+            datagramChannel.register(selector, SelectionKey.OP_READ);
+        } catch (IOException e){
+            App.logger.error("Произошла ошибка при попытке запуска сервера.");
+        }
+
     }
 
     private void stopServer() throws IOException {

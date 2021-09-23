@@ -45,9 +45,7 @@ public class ServerConnectionHandler implements Runnable {
     @Override
     public void run(){
         Response response = null;
-        System.out.println("I have started");
         response = new RequestHandler(request,commandManager).compute();
-        System.out.println("I computed");
         Response finalResponse = response;
         forkJoinPool.submit(new ResponseSenderThread(finalResponse,target,port,channel));
         forkJoinPool.shutdown();
