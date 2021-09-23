@@ -66,7 +66,7 @@ public class Server {
                         return true;
                     }).get()) break;
                     forkJoinPool.execute( new ServerConnectionHandler(this,datagramChannel, request,commandManager,target)); ;
-                    forkJoinPool.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
+                    forkJoinPool.awaitTermination(1000,TimeUnit.MILLISECONDS);
                     stopServer();
                 }  catch (ExecutionException | InterruptedException e) {
                     App.logger.error("При чтении запроса произошла ошибка при чтении запроса!");
@@ -119,6 +119,7 @@ public class Server {
             datagramChannel.register(selector, SelectionKey.OP_READ);
         } catch (IOException e){
             App.logger.error("Произошла ошибка при попытке запуска сервера.");
+
         }
 
     }

@@ -1,7 +1,6 @@
 package server.utility;
 
 import Lab5.common.utility.Outputer;
-import jdk.jfr.internal.Logger;
 import server.App;
 
 import java.sql.*;
@@ -70,7 +69,6 @@ public class DatabaseHandler {
         } catch (ClassNotFoundException e) {
             Outputer.printerror("Драйвер управления базой данных не найден!");
             App.logger.error("Драйвер управления базой данных не найден!");
-            System.exit(1);
         }
     }
 
