@@ -20,6 +20,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="ch.qos.logback:logback-classic:1.3.0-alpha5" level="project" />
-    <orderEntry type="library" exported="" name="postgresql-42.2.22" level="project" />
+    <orderEntry type="library" exported="" name="postgresql" level="project" />
   </component>
 </module>

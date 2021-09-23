@@ -41,7 +41,8 @@ public class AddCommand extends AbstractCommand {
         } catch (ClassCastException e){
             ResponseOutputer.appenderror("Переданный клиентом объект неверен!");
         } catch (DatabaseHandlingException e){
-            ResponseOutputer.appendln("Произошла ошибка при обращении к баке данных!");
+            ResponseOutputer.appendln("Произошла ошибка при обращении к базе данных!");
+            e.printStackTrace();
         }
         return false;
     }

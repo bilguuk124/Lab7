@@ -55,10 +55,9 @@ public class Server {
      */
     public void run() {
         try {
+            App.logger.info("Запуск сервера...");
             do {
-                App.logger.info("Запуск сервера...");
                 startServer();
-                App.logger.info("Сервер успешно запущен.");
                 try{
                     request = null;
                     if (!forkJoinPool.submit(() -> {
@@ -67,7 +66,7 @@ public class Server {
                         return true;
                     }).get()) break;
                     forkJoinPool.execute( new ServerConnectionHandler(this,datagramChannel, request,commandManager,target)); ;
-                    forkJoinPool.awaitTermination(500,TimeUnit.MILLISECONDS);
+                    forkJoinPool.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
                     stopServer();
                 }  catch (ExecutionException | InterruptedException e) {
                     App.logger.error("При чтении запроса произошла ошибка при чтении запроса!");

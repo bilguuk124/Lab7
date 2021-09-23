@@ -2,6 +2,8 @@ package server.utility;
 
 import Lab5.common.interactions.Request;
 import Lab5.common.interactions.Response;
+import Lab5.common.interactions.ResponseCode;
+import Lab5.common.utility.Outputer;
 import org.jetbrains.annotations.NotNull;
 import server.App;
 import server.Server;
@@ -46,6 +48,10 @@ public class ServerConnectionHandler implements Runnable {
     public void run(){
         Response response = null;
         response = new RequestHandler(request,commandManager).compute();
+        if(response.getResponseCode() == ResponseCode.SERVER_EXIT) {
+            Outputer.println("Заказано серверу выйти");
+            System.exit(0);
+        }
         Response finalResponse = response;
         forkJoinPool.submit(new ResponseSenderThread(finalResponse,target,port,channel));
         forkJoinPool.shutdown();

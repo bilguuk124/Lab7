@@ -4,7 +4,7 @@
     <targets>
       <target name="s289142@helios.se.ifmo.ru:2222" type="ssh/sftp">
         <config>
-          <option name="projectRootOnTarget" value="/home/s289142/Lab6-1" />
+          <option name="projectRootOnTarget" value="/home/s289142/proga/Lab7" />
           <option name="serverName" value="s289142@helios.se.ifmo.ru:2222 password" />
         </config>
         <ContributedStateBase type="JavaLanguageRuntime">

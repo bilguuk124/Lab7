@@ -70,6 +70,7 @@ public class DatabaseHandler {
         } catch (ClassNotFoundException e) {
             Outputer.printerror("Драйвер управления базой данных не найден!");
             App.logger.error("Драйвер управления базой данных не найден!");
+            System.exit(1);
         }
     }
 
