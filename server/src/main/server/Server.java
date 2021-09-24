@@ -119,7 +119,7 @@ public class Server {
             datagramChannel.register(selector, SelectionKey.OP_READ);
         } catch (IOException e){
             App.logger.error("Произошла ошибка при попытке запуска сервера.");
-
+            e.printStackTrace();
         }
 
     }

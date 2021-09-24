@@ -48,13 +48,13 @@ public class ServerConnectionHandler implements Runnable {
     public void run(){
         Response response = null;
         response = new RequestHandler(request,commandManager).compute();
-//        if(response.getResponseCode() == ResponseCode.SERVER_EXIT) {
-//            Outputer.println("Заказано серверу выйти");
-//            System.exit(0);
-//        }
         Response finalResponse = response;
         forkJoinPool.submit(new ResponseSenderThread(finalResponse,target,port,channel));
         forkJoinPool.shutdown();
+        if(response.getResponseCode() == ResponseCode.SERVER_EXIT) {
+            Outputer.println("Запрошено выход сервера");
+            System.exit(0);
+        }
     }
 
 

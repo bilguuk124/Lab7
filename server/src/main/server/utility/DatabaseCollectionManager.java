@@ -27,8 +27,9 @@ public class DatabaseCollectionManager {
             DatabaseHandler.GROUP_TABLE_NUMBER_OF_TRANSFERRED_STUDENTS_COLUMN + ", " +
             DatabaseHandler.GROUP_TABLE_FORM_OF_EDUCATION_COLUMN + ", " +
             DatabaseHandler.GROUP_TABLE_SEMESTER_COLUMN + ", " +
-            DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN + ") VALUES (?,?,?,?::astartes_category," +
-            "?::weapon, ?::melee_weapon, ?, ?)";
+            DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN + ", " +
+            DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + ") VALUES (?,?,?,?,?," +
+            "?, ?, ?)";
     private final String DELETE_GROUP_BY_ID = "DELETE FROM" +
             DatabaseHandler.GROUP_TABLE + " WHERE " +
             DatabaseHandler.GROUP_TABLE_ID_COLUMN;
@@ -93,14 +94,14 @@ public class DatabaseCollectionManager {
      * @throws SQLException
      */
     private StudyGroup createGroup(ResultSet resultSet) throws SQLException{
-        Integer id = resultSet.getInt(DatabaseHandler.GROUP_TABLE_ID_COLUMN);
+        int id = resultSet.getInt(DatabaseHandler.GROUP_TABLE_ID_COLUMN);
         String name = resultSet.getString(DatabaseHandler.GROUP_TABLE_NAME_COLUMN);
-        Date creationDate =  resultSet.getDate(DatabaseHandler.GROUP_TABLE_CREATION_DATE_COLUMN);
-        long studentCount = resultSet.getLong(DatabaseHandler.GROUP_TABLE_NUMBER_OF_TOTAL_STUDENTS_COLUMN);
-        int transferredStudents = resultSet.getInt(DatabaseHandler.GROUP_TABLE_NUMBER_OF_TRANSFERRED_STUDENTS_COLUMN);
-        Semester semester = Semester.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_SEMESTER_COLUMN));
-        FormOfEducation formOfEducation = FormOfEducation.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_FORM_OF_EDUCATION_COLUMN));
         Coordinates coordinates = getCoordinatesByGroupId(id);
+        Date creationDate =  resultSet.getDate(DatabaseHandler.GROUP_TABLE_CREATION_DATE_COLUMN);
+        Long studentCount = resultSet.getLong(DatabaseHandler.GROUP_TABLE_NUMBER_OF_TOTAL_STUDENTS_COLUMN);
+        int transferredStudents = resultSet.getInt(DatabaseHandler.GROUP_TABLE_NUMBER_OF_TRANSFERRED_STUDENTS_COLUMN);
+        FormOfEducation formOfEducation = FormOfEducation.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_FORM_OF_EDUCATION_COLUMN));
+        Semester semester = Semester.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_SEMESTER_COLUMN));
         Person admin = getAdminById(resultSet.getLong(DatabaseHandler.ADMIN_TABLE_ID_COLUMN));
         User owner = databaseUserManager.getUserById(resultSet.getLong(DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN));
         return new StudyGroup(
@@ -251,12 +252,12 @@ public class DatabaseCollectionManager {
             preparedInsertAdminStatement.setDate(2, Date.valueOf(groupRaw.getGroupAdmin().getBirthday()));
             preparedInsertAdminStatement.setString(3,groupRaw.getGroupAdmin().getPassportID());
             if (preparedInsertAdminStatement.executeUpdate() == 0) throw new SQLException();
-            ResultSet generatedChapterKeys = preparedInsertAdminStatement.getGeneratedKeys();
+            ResultSet generatedAdminKeys = preparedInsertAdminStatement.getGeneratedKeys();
             long adminId;
-            if (generatedChapterKeys.next()) {
-                adminId = generatedChapterKeys.getLong(1);
+            if (generatedAdminKeys.next()) {
+                adminId = generatedAdminKeys.getLong(1);
             } else throw new SQLException();
-            App.logger.info("Выполнен запрос INSERT_CHAPTER.");
+            App.logger.info("Выполнен запрос INSERT_ADMIN.");
 
             preparedInsertGroupStatement.setString(1, groupRaw.getName());
             preparedInsertGroupStatement.setDate(2, creationDate);
@@ -267,10 +268,10 @@ public class DatabaseCollectionManager {
             preparedInsertGroupStatement.setLong(7, adminId);
             preparedInsertGroupStatement.setLong(8, databaseUserManager.getUserIdByUsername(user));
             if (preparedInsertGroupStatement.executeUpdate() == 0) throw new SQLException();
-            ResultSet generatedMarineKeys = preparedInsertGroupStatement.getGeneratedKeys();
-            Integer studyGroupId;
-            if (generatedMarineKeys.next()) {
-                studyGroupId = generatedMarineKeys.getInt(1);
+            ResultSet generatedGroupKeys = preparedInsertGroupStatement.getGeneratedKeys();
+            int studyGroupId;
+            if (generatedGroupKeys.next()) {
+                studyGroupId = generatedGroupKeys.getInt(1);
             } else throw new SQLException();
             App.logger.info("Выполнен запрос INSERT_GROUP.");
 
@@ -297,6 +298,7 @@ public class DatabaseCollectionManager {
             return group;
         } catch (SQLException exception) {
             App.logger.error("Произошла ошибка при выполнении группы запросов на добавление нового объекта!");
+            exception.printStackTrace();
             databaseHandler.rollback();
             throw new DatabaseHandlingException();
         } finally {

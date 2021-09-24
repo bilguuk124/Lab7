@@ -41,7 +41,6 @@ public class ResponseSenderThread implements Runnable{
         }
     }
     private void sendResponse(Response response) throws IOException {
-        System.out.println("started sending process");
         selector = Selector.open();
         datagramChannel.register(selector, SelectionKey.OP_WRITE);
         makeByteBufferToResponse(response);
@@ -53,7 +52,6 @@ public class ResponseSenderThread implements Runnable{
                 if(key.isWritable()){
                     channel = (DatagramChannel) key.channel();
                     channel.send(byteBuffer,target);
-                    System.out.println(target);
                     channel.register(selector, SelectionKey.OP_READ);
                     break;
                 }
