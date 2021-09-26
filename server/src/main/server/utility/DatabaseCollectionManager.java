@@ -62,6 +62,8 @@ public class DatabaseCollectionManager {
             DatabaseHandler.COORDINATES_TABLE_X_COLUMN + " = ?, " +
             DatabaseHandler.COORDINATES_TABLE_Y_COLUMN + " = ?" + " WHERE " +
             DatabaseHandler.COORDINATES_TABLE_GROUP_ID_COLUMN + " = ?";
+    private final String DELETE_COORDINATES_BY_ID = "DELETE FROM " + DatabaseHandler.COORDINATES_TABLE +
+            " WHERE " + DatabaseHandler.COORDINATES_TABLE_ID_COLUMN + " = ?";
 
     //ADMIN_TABLE
     private final String SELECT_ALL_ADMIN = "SELECT * FROM " + DatabaseHandler.ADMIN_TABLE;
@@ -78,7 +80,7 @@ public class DatabaseCollectionManager {
             DatabaseHandler.ADMIN_TABLE_PASSPORT_ID_COLUMN + " = ?" + "WHERE" +
             DatabaseHandler.ADMIN_TABLE_ID_COLUMN + " = ?";
     private final String DELETE_ADMIN_BY_ID = "DELETE FROM " +
-            DatabaseHandler.ADMIN_TABLE + " WHERE " + DatabaseHandler.ADMIN_TABLE_ID_COLUMN;
+            DatabaseHandler.ADMIN_TABLE + " WHERE " + DatabaseHandler.ADMIN_TABLE_ID_COLUMN + " = ?";
     private DatabaseHandler databaseHandler;
     private DatabaseUserManager databaseUserManager;
 
@@ -157,7 +159,7 @@ public class DatabaseCollectionManager {
             ResultSet resultSet = preparedSelectMarineByIdStatement.executeQuery();
             App.logger.info("Выполнен запрос SELECT_GROUP_BY_ID.");
             if (resultSet.next()) {
-                adminId = resultSet.getLong(DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN);
+                adminId = resultSet.getInt(DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN);
             } else throw new SQLException();
         } catch (SQLException exception) {
             App.logger.error("Произошла ошибка при выполнении запроса SELECT_ADMIN_ID_BY_ID!");
@@ -198,6 +200,24 @@ public class DatabaseCollectionManager {
         return coordinates;
     }
 
+    private int getCoordinatesIdByGroupId(long groupId) throws SQLException{
+        int coordinatesId;
+        PreparedStatement preparedGetCoordinatesIdByGroupIdStatement = null;
+        try{
+            preparedGetCoordinatesIdByGroupIdStatement = databaseHandler.getPreparedStatement(SELECT_COORDINATES_BY_GROUP_ID, false);
+            preparedGetCoordinatesIdByGroupIdStatement.setLong(1, groupId);
+            ResultSet resultSet = preparedGetCoordinatesIdByGroupIdStatement.executeQuery();
+            if(resultSet.next()){
+                coordinatesId = resultSet.getInt(DatabaseHandler.COORDINATES_TABLE_ID_COLUMN);
+            } else throw new SQLException();
+        } catch (SQLException e){
+            App.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_GROUP_ID!");
+            throw new SQLException(e);
+        } finally {
+            databaseHandler.closePreparedStatement(preparedGetCoordinatesIdByGroupIdStatement);
+        }
+        return coordinatesId;
+    }
     /**
      *
      * @param adminId
@@ -422,16 +442,27 @@ public class DatabaseCollectionManager {
      */
     public void deleteGroupById(long groupId) throws DatabaseHandlingException{
         PreparedStatement preparedDeleteGroupByIdStatement = null;
+        PreparedStatement preparedDeleteCoordinatesByGroupIdStatement = null;
+        PreparedStatement preparedDeleteAdminByGroupIdStatement = null;
         try{
+            int coordinatesId = getCoordinatesIdByGroupId(groupId);
+            long adminId = getAdminIdByGroupId(groupId);
             preparedDeleteGroupByIdStatement = databaseHandler.getPreparedStatement(DELETE_GROUP_BY_ID,false);
-            preparedDeleteGroupByIdStatement.setLong(1,getAdminIdByGroupId(groupId));
+            preparedDeleteGroupByIdStatement.setLong(1,groupId);
             if(preparedDeleteGroupByIdStatement.executeUpdate() == 0) Outputer.println(3);
-            App.logger.info("Выполнен запрос DELETE_GROUP_BY_ID");
+            preparedDeleteCoordinatesByGroupIdStatement = databaseHandler.getPreparedStatement(DELETE_COORDINATES_BY_ID, false);
+            preparedDeleteCoordinatesByGroupIdStatement.setInt(1, coordinatesId);
+            if(preparedDeleteCoordinatesByGroupIdStatement.executeUpdate() == 0) Outputer.println(3);
+            preparedDeleteAdminByGroupIdStatement = databaseHandler.getPreparedStatement(DELETE_ADMIN_BY_ID, false);
+            preparedDeleteAdminByGroupIdStatement.setLong(1, adminId);
+            if(preparedDeleteAdminByGroupIdStatement.executeUpdate() == 0) Outputer.println(3);
         }catch (SQLException exception){
             App.logger.error("Произошла ошибка при выполнении запроса DELETE_GROUP_BY_ID");
             throw new DatabaseHandlingException();
         } finally {
             databaseHandler.closePreparedStatement(preparedDeleteGroupByIdStatement);
+            databaseHandler.closePreparedStatement(preparedDeleteAdminByGroupIdStatement);
+            databaseHandler.closePreparedStatement(preparedDeleteCoordinatesByGroupIdStatement);
         }
     }
 

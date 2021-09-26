@@ -27,6 +27,13 @@ public class UserHandler {
         this.userScanner = userScanner;
     }
 
+    /**
+     * Receives user input
+     *
+     * @param serverResponseCode
+     * @param user
+     * @return
+     */
     public Request handle(ResponseCode serverResponseCode, User user){
         String userInput;
         String[] userCommand;
@@ -40,7 +47,7 @@ public class UserHandler {
                     while (fileMode() && !userScanner.hasNextLine()){
                         userScanner.close();
                         userScanner = scannerStack.pop();
-                        Outputer.println("Возвращаюсь к скрипту " + scriptStack.pop().getName() + "'...");
+                        scriptStack.pop();
                     }
                     if(fileMode()){
                         userInput = userScanner.nextLine();
