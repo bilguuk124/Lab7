@@ -44,6 +44,7 @@ public class ClearCommand extends AbstractCommand {
             ResponseOutputer.appendln("Использование: '" + getName() + "'");
         } catch (DatabaseHandlingException e) {
             ResponseOutputer.appenderror("Произошла ошибка при обращении к базе данных!");
+            e.printStackTrace();
         } catch (PermissionDeniedException e) {
             ResponseOutputer.appenderror("Недостаточно прав для выполнения данной команды!");
             ResponseOutputer.appendln("Принадлежащие другим пользователям объекты доступны только для чтения.");

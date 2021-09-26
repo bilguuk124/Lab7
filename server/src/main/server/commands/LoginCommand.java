@@ -33,6 +33,6 @@ public class LoginCommand extends AbstractCommand{
             ResponseOutputer.appenderror("Произошла ошибка при обращении к базе данных!");
         } catch (UserIsNotFoundException exception) {
             ResponseOutputer.appenderror("Неправильные имя пользователя или пароль!");
-        } return true;
+        } return false;
     }
 }

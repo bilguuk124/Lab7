@@ -18,7 +18,7 @@ public class DatabaseCollectionManager {
     // Group Table
     private final String SELECT_ALL_GROUPS = "SELECT * FROM " + DatabaseHandler.GROUP_TABLE;
     private final String SELECT_GROUP_BY_ID = SELECT_ALL_GROUPS + " WHERE " + DatabaseHandler.GROUP_TABLE_ID_COLUMN + " = ?";
-    private final String SELECT_GROUP_BY_ID_AND_USER_ID = SELECT_GROUP_BY_ID + "AND" + DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + "= ?";
+    private final String SELECT_GROUP_BY_ID_AND_USER_ID = SELECT_GROUP_BY_ID + " AND " + DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + " = ?";
     private final String INSERT_GROUP = "INSERT INTO " +
             DatabaseHandler.GROUP_TABLE + " (" +
             DatabaseHandler.GROUP_TABLE_NAME_COLUMN + ", " +
@@ -30,9 +30,9 @@ public class DatabaseCollectionManager {
             DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN + ", " +
             DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + ") VALUES (?,?,?,?,?," +
             "?, ?, ?)";
-    private final String DELETE_GROUP_BY_ID = "DELETE FROM" +
+    private final String DELETE_GROUP_BY_ID = "DELETE FROM " +
             DatabaseHandler.GROUP_TABLE + " WHERE " +
-            DatabaseHandler.GROUP_TABLE_ID_COLUMN;
+            DatabaseHandler.GROUP_TABLE_ID_COLUMN + " = ? ";
     private final String UPDATE_GROUP_NAME_BY_ID = "UPDATE " + DatabaseHandler.GROUP_TABLE + " SET " +
             DatabaseHandler.GROUP_TABLE_NAME_COLUMN + " = ?" + " WHERE " +
             DatabaseHandler.GROUP_TABLE_ID_COLUMN + " = ?";
