@@ -2,7 +2,10 @@ package server.utility;
 
 import Lab5.common.data.*;
 import Lab5.common.exceptions.DatabaseHandlingException;
+import Lab5.common.interactions.User;
 import Lab5.common.utility.Outputer;
+import checkers.units.quals.C;
+import org.openjsse.sun.security.util.Cache;
 import server.App;
 import sun.reflect.generics.tree.Tree;
 
@@ -208,8 +211,18 @@ public class CollectionManager {
     /**
      * Clears the collection
      */
-    public void clearCollection(){
+    public int clearCollection(User user){
+        CachedLinkedHashSet<StudyGroup> deletingCollection = new CachedLinkedHashSet<>();
+        for (StudyGroup studyGroup : studyGroupsCollection){
+            if (!studyGroup.getOwner().equals(user)) {
+                deletingCollection.add(studyGroup);
+            }
+        }
+        int totalGroups=studyGroupsCollection.size()-deletingCollection.size();
         studyGroupsCollection.clear();
+        studyGroupsCollection = deletingCollection;
+        if(totalGroups != 0) ResponseOutputer.appendln("Удалено всего " + totalGroups + " групп.");
+        return totalGroups;
     }
 
     /**

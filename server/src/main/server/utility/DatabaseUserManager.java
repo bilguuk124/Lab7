@@ -12,7 +12,7 @@ public class DatabaseUserManager {
     //USER_TABLE
     private final String SELECT_USER_BY_ID = "SELECT * FROM " + DatabaseHandler.USER_TABLE +
             " WHERE " + DatabaseHandler.USER_TABLE_ID_COLUMN + " = ?";
-    private final String SELECT_USER_BY_USERNAME = "SELECT * FROM " + DatabaseHandler.USER_TABLE +
+    public final String SELECT_USER_BY_USERNAME = "SELECT * FROM " + DatabaseHandler.USER_TABLE +
             " WHERE " + DatabaseHandler.USER_TABLE_USERNAME_COLUMN + " = ?";
     private final String SELECT_USER_BY_USERNAME_AND_PASSWORD = SELECT_USER_BY_USERNAME + " AND " +
             DatabaseHandler.USER_TABLE_PASSWORD_COLUMN + " = ?";

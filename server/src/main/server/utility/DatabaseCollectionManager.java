@@ -19,6 +19,7 @@ public class DatabaseCollectionManager {
     private final String SELECT_ALL_GROUPS = "SELECT * FROM " + DatabaseHandler.GROUP_TABLE;
     private final String SELECT_GROUP_BY_ID = SELECT_ALL_GROUPS + " WHERE " + DatabaseHandler.GROUP_TABLE_ID_COLUMN + " = ?";
     private final String SELECT_GROUP_BY_ID_AND_USER_ID = SELECT_GROUP_BY_ID + " AND " + DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + " = ?";
+    private final String SELECT_GROUP_BY_USER_ID = SELECT_ALL_GROUPS + " WHERE " + DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN + " =?";
     private final String INSERT_GROUP = "INSERT INTO " +
             DatabaseHandler.GROUP_TABLE + " (" +
             DatabaseHandler.GROUP_TABLE_NAME_COLUMN + ", " +
@@ -142,6 +143,29 @@ public class DatabaseCollectionManager {
          databaseHandler.closePreparedStatement(preparedSelectAllStatement);
      }
      return groupList;
+    }
+
+    public CachedLinkedHashSet<StudyGroup> getUserCollection(User user) throws DatabaseHandlingException{
+        CachedLinkedHashSet<StudyGroup> groupList = new CachedLinkedHashSet<>();
+        long userId = databaseUserManager.getUserIdByUsername(user);
+        PreparedStatement preparedSelectUserEntriesStatement = null;
+        try{
+            preparedSelectUserEntriesStatement = databaseHandler.getPreparedStatement(SELECT_GROUP_BY_USER_ID, false);
+            preparedSelectUserEntriesStatement.setLong(1, userId);
+            ResultSet resultSet = preparedSelectUserEntriesStatement.executeQuery();
+            int groupCount = 0;
+            while(resultSet.next()){
+                groupList.add(createGroup(resultSet));
+                groupCount++;
+            }
+            Outputer.println("Успешно удалено ваши группы. Всего: " + groupCount);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw new DatabaseHandlingException();
+        }finally {
+            databaseHandler.closePreparedStatement(preparedSelectUserEntriesStatement);
+        }
+        return groupList;
     }
 
     /**
@@ -494,8 +518,8 @@ public class DatabaseCollectionManager {
      *
      * @throws DatabaseHandlingException
      */
-    public void clearCollection() throws DatabaseHandlingException{
-        CachedLinkedHashSet<StudyGroup> groupList = getCollection();
+    public void clearCollection(User user) throws DatabaseHandlingException{
+        CachedLinkedHashSet<StudyGroup> groupList = getUserCollection(user);
         for(StudyGroup group : groupList){
             deleteGroupById(group.getId());
         }
