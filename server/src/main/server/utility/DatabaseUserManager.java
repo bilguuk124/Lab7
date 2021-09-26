@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class DatabaseUserManager {
     //USER_TABLE
-    private final String SELECT_USER_BY_ID = "SELECT * FROM" + DatabaseHandler.USER_TABLE +
+    private final String SELECT_USER_BY_ID = "SELECT * FROM " + DatabaseHandler.USER_TABLE +
             " WHERE " + DatabaseHandler.USER_TABLE_ID_COLUMN + " = ?";
     private final String SELECT_USER_BY_USERNAME = "SELECT * FROM " + DatabaseHandler.USER_TABLE +
             " WHERE " + DatabaseHandler.USER_TABLE_USERNAME_COLUMN + " = ?";
@@ -32,7 +32,7 @@ public class DatabaseUserManager {
      * @return User by ID
      * @throws SQLException
      */
-    public User getUserById(long userId) throws SQLException{
+    public User getUserById(long userId){
         User user = null;
         PreparedStatement preparedSelectUserByIdStatement = null;
         try {
@@ -48,7 +48,7 @@ public class DatabaseUserManager {
                         resultSet.getString(DatabaseHandler.USER_TABLE_PASSWORD_COLUMN)
                 );
             } else throw new SQLException();
-        } catch ( SQLException exception){
+        } catch (SQLException exception){
             App.logger.error("Произошла ошибка при выполнении запроса SELECT_USER_BY_ID!");
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectUserByIdStatement);

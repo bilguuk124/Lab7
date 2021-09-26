@@ -24,9 +24,8 @@ public class CollectionManager {
 
     public CollectionManager(DatabaseCollectionManager databaseCollectionManager) {
         this.lastInitTime = null;
-        this.lastInitTime = null;
         this.databaseCollectionManager = databaseCollectionManager;
-                  loadCollection();
+        loadCollection();
     }
 
     /**
@@ -222,6 +221,11 @@ public class CollectionManager {
         return studyGroupsCollection.getLast().getId()+1;
     }
 
+    public String showCollection(){
+        if (studyGroupsCollection.isEmpty()) return  "Коллекция пуста";
+        return studyGroupsCollection.stream().reduce("",(sum, m) -> sum += m + "\n\n", (sum1,sum2) -> sum1 + sum2).trim();
+    }
+
 
     /**
      * Loads the collection from file.
@@ -233,6 +237,7 @@ public class CollectionManager {
             App.logger.info("Коллекция загружена");
         } catch (DatabaseHandlingException e) {
             studyGroupsCollection = new CachedLinkedHashSet<>();
+            e.printStackTrace();
             App.logger.error("Коллекция не может быть загружена");
         }
     }

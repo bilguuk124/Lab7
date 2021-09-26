@@ -23,7 +23,7 @@ public class DatabaseHandler {
     public static final String GROUP_TABLE_SEMESTER_COLUMN = "semester";
     public static final String GROUP_TABLE_FORM_OF_EDUCATION_COLUMN = "form_of_education";
     public static final String GROUP_TABLE_ADMIN_ID_COLUMN = "admin_id";
-    public static final String GROUP_TABLE_USER_ID_COLUMN = " user_id";
+    public static final String GROUP_TABLE_USER_ID_COLUMN = "user_id";
     // USER_TABLE column names
     public static final String USER_TABLE_ID_COLUMN = "id";
     public static final String USER_TABLE_USERNAME_COLUMN = "username";

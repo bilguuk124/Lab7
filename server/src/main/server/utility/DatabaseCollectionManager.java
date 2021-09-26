@@ -52,7 +52,7 @@ public class DatabaseCollectionManager {
     //COORDINATES_TABLE
     private final String SELECT_ALL_COORDINATES = "SELECT * FROM " + DatabaseHandler.COORDINATES_TABLE;
     private final String SELECT_COORDINATES_BY_GROUP_ID = SELECT_ALL_COORDINATES + " WHERE " +
-            DatabaseHandler.COORDINATES_TABLE_GROUP_ID_COLUMN;
+            DatabaseHandler.COORDINATES_TABLE_GROUP_ID_COLUMN + " =?";
     private final String INSERT_COORDINATES = "INSERT INTO " +
             DatabaseHandler.COORDINATES_TABLE + " (" +
             DatabaseHandler.COORDINATES_TABLE_GROUP_ID_COLUMN + ", " +
@@ -64,7 +64,7 @@ public class DatabaseCollectionManager {
             DatabaseHandler.COORDINATES_TABLE_GROUP_ID_COLUMN + " = ?";
 
     //ADMIN_TABLE
-    private final String SELECT_ALL_ADMIN = "SELECT * FROM" + DatabaseHandler.ADMIN_TABLE;
+    private final String SELECT_ALL_ADMIN = "SELECT * FROM " + DatabaseHandler.ADMIN_TABLE;
     private final String SELECT_ADMIN_BY_ID = SELECT_ALL_ADMIN + " WHERE " +
             DatabaseHandler.ADMIN_TABLE_ID_COLUMN + " = ?";
     private final String INSERT_ADMIN = "INSERT INTO " +
@@ -102,7 +102,7 @@ public class DatabaseCollectionManager {
         int transferredStudents = resultSet.getInt(DatabaseHandler.GROUP_TABLE_NUMBER_OF_TRANSFERRED_STUDENTS_COLUMN);
         FormOfEducation formOfEducation = FormOfEducation.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_FORM_OF_EDUCATION_COLUMN));
         Semester semester = Semester.valueOf(resultSet.getString(DatabaseHandler.GROUP_TABLE_SEMESTER_COLUMN));
-        Person admin = getAdminById(resultSet.getLong(DatabaseHandler.ADMIN_TABLE_ID_COLUMN));
+        Person admin = getAdminById(resultSet.getInt(DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN));
         User owner = databaseUserManager.getUserById(resultSet.getLong(DatabaseHandler.GROUP_TABLE_USER_ID_COLUMN));
         return new StudyGroup(
                 id,
@@ -128,9 +128,12 @@ public class DatabaseCollectionManager {
      try{
          preparedSelectAllStatement = databaseHandler.getPreparedStatement(SELECT_ALL_GROUPS,false);
          ResultSet resultSet = preparedSelectAllStatement.executeQuery();
+         int groupCount = 0;
          while(resultSet.next()){
              groupList.add(createGroup(resultSet));
+             groupCount++;
          }
+         Outputer.println("Всего " + groupCount + " групп загружено.");
      }catch (SQLException exception){
          throw new DatabaseHandlingException();
      }finally {
@@ -157,7 +160,7 @@ public class DatabaseCollectionManager {
                 adminId = resultSet.getLong(DatabaseHandler.GROUP_TABLE_ADMIN_ID_COLUMN);
             } else throw new SQLException();
         } catch (SQLException exception) {
-            App.logger.error("Произошла ошибка при выполнении запроса SELECT_MARINE_BY_ID!");
+            App.logger.error("Произошла ошибка при выполнении запроса SELECT_ADMIN_ID_BY_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectMarineByIdStatement);
@@ -187,7 +190,7 @@ public class DatabaseCollectionManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            App.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_MARINE_ID!");
+            App.logger.error("Произошла ошибка при выполнении запроса SELECT_COORDINATES_BY_GROUP_ID!");
             throw new SQLException(exception);
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectCoordinatesByGroupIdStatement);
@@ -201,13 +204,13 @@ public class DatabaseCollectionManager {
      * @return Admin
      * @throws SQLException
      */
-    private Person getAdminById(long adminId) throws SQLException {
-        Person person;
+    private Person getAdminById(int adminId){
+        Person person = null;
         PreparedStatement preparedSelectAdminByIdStatement = null;
         try {
             preparedSelectAdminByIdStatement =
                     databaseHandler.getPreparedStatement(SELECT_ADMIN_BY_ID, false);
-            preparedSelectAdminByIdStatement.setLong(1, adminId);
+            preparedSelectAdminByIdStatement.setInt(1, adminId);
             ResultSet resultSet = preparedSelectAdminByIdStatement.executeQuery();
             App.logger.info("Выполнен запрос SELECT_ADMIN_BY_ID.");
             if (resultSet.next()) {
@@ -218,8 +221,7 @@ public class DatabaseCollectionManager {
                 );
             } else throw new SQLException();
         } catch (SQLException exception) {
-            App.logger.error("Произошла ошибка при выполнении запроса SELECT_CHAPTER_BY_ID!");
-            throw new SQLException(exception);
+            App.logger.error("Произошла ошибка при выполнении запроса SELECT_ADMIN_BY_ID!");
         } finally {
             databaseHandler.closePreparedStatement(preparedSelectAdminByIdStatement);
         }
