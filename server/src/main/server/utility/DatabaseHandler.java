@@ -1,9 +1,12 @@
 package server.utility;
 
+import Lab5.common.exceptions.ConnectionErrorException;
 import Lab5.common.utility.Outputer;
 import server.App;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class to handle Database.
@@ -40,6 +43,8 @@ public class DatabaseHandler {
     public static final String ADMIN_TABLE_PASSPORT_ID_COLUMN = "passport_id";
 
     private final String JDBC_DRIVER = "org.postgresql.Driver";
+    Logger logging = Logger.getLogger("org.postgresql.Driver");
+
 
     private String url;
     private String user;
@@ -59,13 +64,15 @@ public class DatabaseHandler {
 
     private void connectToDataBase(){
         try{
+            logging.setLevel(Level.OFF);
             Class.forName(JDBC_DRIVER);
             connection = DriverManager.getConnection(url,user,password);
             Outputer.println("Соединение с базой данных установлено.");
             App.logger.info("Соединение с базой данных установлено.");
         } catch (SQLException e) {
             Outputer.printerror("Произошла ошибка при подключении к базе данных!");
-            App.logger.error("Произошла ошибка при подключении к базе данных!");
+            App.logger.error("Произошла ошибка при подключении к базе данных! Попробуйте ещё раз");
+            System.exit(1);
         } catch (ClassNotFoundException e) {
             Outputer.printerror("Драйвер управления базой данных не найден!");
             App.logger.error("Драйвер управления базой данных не найден!");

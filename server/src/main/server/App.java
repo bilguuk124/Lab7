@@ -70,8 +70,7 @@ public class App {
         } catch (NumberFormatException e){
             Outputer.printerror("Порт должен быть представлен числом!");
             logger.error("Порт должен быть представлен числом!");
-        }
-        catch (NotInDeclaredLimitsException e) {
+        } catch (NotInDeclaredLimitsException e) {
             Outputer.printerror("Порт не может быть отрицательным!");
             logger.error("Порт не может быть отрицательным!");
         }

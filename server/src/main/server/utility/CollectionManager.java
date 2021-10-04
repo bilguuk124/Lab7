@@ -7,6 +7,7 @@ import Lab5.common.utility.Outputer;
 import checkers.units.quals.C;
 import org.openjsse.sun.security.util.Cache;
 import server.App;
+import server.commands.MyIdComparator;
 import sun.reflect.generics.tree.Tree;
 
 
@@ -41,7 +42,7 @@ public class CollectionManager {
     }
 
     public TreeSet<StudyGroup> getSortedSet(){
-        TreeSet<StudyGroup> sortedList = new TreeSet<>(new MyCoordinateComparator());
+        TreeSet<StudyGroup> sortedList = new TreeSet<>(new MyIdComparator());
         sortedList.addAll(studyGroupsCollection);
         return sortedList;
     }
